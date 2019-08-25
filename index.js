@@ -1,26 +1,22 @@
 const app = require('./lib/server');
 const port = process.env.PORT || 3000;
 
-app.get('/create', (request, response) => {
-  console.log('getting create');
-  response.writeHead(200, { 'Content-Type': 'application/json' });
-  return response.write(JSON.stringify({ Message: 'This is a get request' }));
-});
+const UserController = require('./controller/user');
 
-app.post('/create', (request, response) => {
-  response.writeHead(200, { 'Content-Type': 'application/json' });
-  response.write(JSON.stringify({ Message: 'This is a post request' }));
-});
+// get a user with an id in the query
+app.get('/user', UserController.getUser);
 
-app.put('/create', (request, response) => {
-  response.writeHead(200, { 'Content-Type': 'application/json' });
-  response.write(JSON.stringify({ Message: 'This is an update request' }));
-});
+//get all users
+app.get('/users', UserController.getAllUsers);
 
-app.delete('/create', (request, response) => {
-  response.writeHead(200, { 'Content-Type': 'application/json' });
-  response.write(JSON.stringify({ Message: 'This is a delete request' }));
-});
+//create a new user
+app.post('/user', UserController.create);
+
+//update user
+app.put('/user', UserController.update);
+
+//delete user
+app.delete('/user', UserController.deleteUser);
 
 app.listen(port, () => {
   console.log(`Server Listening at port ${port}`);

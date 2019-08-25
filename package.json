@@ -3,5 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "author": "Somtozech <ezechinnaemeka@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "shortid": "^2.2.14"
+  }
 }
