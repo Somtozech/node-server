@@ -10,14 +10,6 @@ app.get('/user', UserController.getUser);
 app.get('/users', UserController.getAllUsers);
 
 //create a new user
-/**
- * Request body should have the following fields
- *  - name
- * - email
- * - occupation
- * - state
- * - country
- */
 app.post('/user', UserController.create);
 
 //update user
