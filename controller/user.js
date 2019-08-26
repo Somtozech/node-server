@@ -44,7 +44,7 @@ class UserController {
         { name: 'name', regex: stringRegex },
         {
           name: 'email',
-          regex: stringRegex
+          regex: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
         },
         {
           name: 'occupation',
@@ -66,6 +66,7 @@ class UserController {
         response.writeHead(400, { 'Content-Type': 'application/json' });
         response.write(JSON.stringify({ errors }));
         response.end();
+        return;
       }
 
       //model a new user
@@ -110,9 +111,10 @@ class UserController {
           message: 'Expects a valid user id in the query'
         })
       );
+      return;
     }
 
-    Database.get(query.id)
+    Database.get(id)
       .then(user => {
         if (!user) {
           response.writeHead(404, { 'Content-Type': 'application/json' });
@@ -145,7 +147,7 @@ class UserController {
     const { id } = request.query;
     if (!id) {
       response.writeHead(400, { 'Content-Type': 'application/json' });
-      response.end(
+      return response.end(
         JSON.stringify({
           message: 'Expects a valid user id in the query'
         })
@@ -164,14 +166,18 @@ class UserController {
         }
       }
 
-      const errors = Validation.checkValuesNullorEmpty(
-        body,
-        ...Object.keys(body)
-      );
+      const validateEmail = Validation.checkValuesValid(body, {
+        name: 'email',
+        regex: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      });
+
+      const errors =
+        Validation.checkValuesNullorEmpty(body, ...Object.keys(body)) ||
+        validateEmail;
       if (errors) {
         response.writeHead(400, { 'Content-Type': 'application/json' });
         response.write(JSON.stringify({ errors }));
-        response.end();
+        return response.end();
       }
 
       Database.update(id, body)
@@ -209,14 +215,14 @@ class UserController {
 
     if (!id) {
       response.writeHead(400, { 'Content-Type': 'application/json' });
-      response.end(
+      return response.end(
         JSON.stringify({
           message: 'Expects a valid user id in the query'
         })
       );
     }
 
-    Database.delete(query.id)
+    Database.delete(id)
       .then(() => {
         response.writeHead(200, { 'Content-Type': 'application/json' });
         response.end(
@@ -241,7 +247,6 @@ class UserController {
     Database.read()
       .then(users => {
         const values = Object.values(users);
-        console.log(values);
         response.writeHead(200, { 'Content-Type': 'application/json' });
         response.end(JSON.stringify(values));
       })
